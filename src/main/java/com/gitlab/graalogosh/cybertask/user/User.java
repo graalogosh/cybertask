@@ -1,5 +1,6 @@
-package com.gitlab.graalogosh.cybertask.models;
+package com.gitlab.graalogosh.cybertask.user;
 
+import com.gitlab.graalogosh.cybertask.task.Task;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 

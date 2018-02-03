@@ -22,6 +22,7 @@ public class Task {
     private Date date;
     private Date completedDate;
     private List<Date> notificationDates;
+    private Boolean recurring;
 
     private List<Task> subtasks;
     private Boolean needToCompleteAllSubtasks;

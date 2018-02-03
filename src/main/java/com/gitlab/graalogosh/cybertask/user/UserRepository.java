@@ -1,6 +1,6 @@
-package com.gitlab.graalogosh.cybertask.repositories;
+package com.gitlab.graalogosh.cybertask.user;
 
-import com.gitlab.graalogosh.cybertask.models.User;
+import com.gitlab.graalogosh.cybertask.user.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
