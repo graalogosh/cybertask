@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,52 +53,21 @@ public class Translator {
             return LocalDate.now().plusDays(1);
         }
 
-        Pattern monday = Pattern.compile("(в понедельник)");
-        m = monday.matcher(input);
-        if (m.find()) {
-            return LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY));
-        }
+        HashMap<String, DayOfWeek> weekdays = new HashMap<>();
+        weekdays.put("(в понедельник)", DayOfWeek.MONDAY);
+        weekdays.put("(во вторник)", DayOfWeek.TUESDAY);
+        weekdays.put("(в среду)", DayOfWeek.WEDNESDAY);
+        weekdays.put("(в четверг)", DayOfWeek.THURSDAY);
+        weekdays.put("(в пятницу)", DayOfWeek.FRIDAY);
+        weekdays.put("(в субботу)", DayOfWeek.SATURDAY);
+        weekdays.put("(в воскресенье)", DayOfWeek.SUNDAY);
 
-        Pattern tuesday = Pattern.compile("(во вторник)");
-        m = tuesday.matcher(input);
-        if (m.find()) {
-            return LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.TUESDAY));
-
-        }
-
-        Pattern wednesday = Pattern.compile("(в среду)");
-        m = wednesday.matcher(input);
-        if (m.find()) {
-            return LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY));
-
-        }
-
-        Pattern thursday = Pattern.compile("(в четверг)");
-        m = thursday.matcher(input);
-        if (m.find()) {
-            return LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.THURSDAY));
-
-        }
-
-        Pattern friday = Pattern.compile("(в пятницу)");
-        m = friday.matcher(input);
-        if (m.find()) {
-            return LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
-
-        }
-
-        Pattern saturday = Pattern.compile("(в субботу)");
-        m = saturday.matcher(input);
-        if (m.find()) {
-            return LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
-
-        }
-
-        Pattern sunday = Pattern.compile("(в воскресенье)q");
-        m = sunday.matcher(input);
-        if (m.find()) {
-            return LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
-
+        for (Map.Entry<String, DayOfWeek> weekday : weekdays.entrySet()){
+            Pattern pattern = Pattern.compile(weekday.getKey());
+            m = pattern.matcher(input);
+            if (m.find()) {
+                return LocalDate.now().with(TemporalAdjusters.next(weekday.getValue()));
+            }
         }
 
         //else

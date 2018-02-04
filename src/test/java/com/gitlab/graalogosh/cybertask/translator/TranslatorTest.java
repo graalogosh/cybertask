@@ -22,7 +22,8 @@ public class TranslatorTest {
         LocalTime expected = LocalTime.parse("13:45");
         Task task = Translator.getTaskFromString(input);
 
-        assertEquals(expected, task.getDate());
+        LocalTime actual = task.getDate().toLocalTime();
+        assertEquals(expected, actual);
     }
 
 
@@ -32,6 +33,7 @@ public class TranslatorTest {
         String input = "Напомни мне покормить кота во вторник в 13:45";
         LocalDate expected = LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.TUESDAY));
         Task task = Translator.getTaskFromString(input);
-        assertEquals(expected, task.getDate());
+        LocalDate actual = task.getDate().toLocalDate();
+        assertEquals(expected, actual);
     }
 }
