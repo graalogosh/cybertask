@@ -16,9 +16,19 @@ import static org.junit.Assert.assertEquals;
 public class TranslatorTest {
 
     @Test
-    //time
-    public void getTaskFromString_time() {
+
+    public void getTaskFromString_time1() {
         String input = "Напомни мне покормить кота в 13:45";
+        LocalTime expected = LocalTime.parse("13:45");
+        Task task = Translator.getTaskFromString(input);
+
+        LocalTime actual = task.getDate().toLocalTime();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getTaskFromString_time2() {
+        String input = "Напомни мне покормить кота в 13.45";
         LocalTime expected = LocalTime.parse("13:45");
         Task task = Translator.getTaskFromString(input);
 

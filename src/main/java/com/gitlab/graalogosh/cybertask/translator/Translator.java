@@ -17,22 +17,16 @@ import java.util.regex.Pattern;
  */
 public class Translator {
     static Task getTaskFromString(String input) {
-        /*TODO проверять сначала время, потом дату, если общий объект меньше текущего времени, то либо прибавлять один день,
-               либо искать следующий, такой же как сегодня, день недели*/
-
-        //date
-        LocalDate date = getDateFromString(input);
+        //delete junk
 
         //time
-        LocalTime time = getTimeFromString(input);
+        final LocalTime time = getTimeFromString(input);
+
+        //date
+        final LocalDate date = getDateFromString(input, time);
 
         //combine date and time
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime resultDateTime = LocalDateTime.of(date, time);
-        if (resultDateTime.isBefore(now)) {
-            resultDateTime = resultDateTime.plusDays(1);
-        }
-
+        final LocalDateTime resultDateTime = LocalDateTime.of(date, time);
 
         //subject
 
@@ -40,11 +34,15 @@ public class Translator {
         return Task.builder().date(resultDateTime).build();
     }
 
-    static private LocalDate getDateFromString(String input) {
+    static private LocalDate getDateFromString(String input, final LocalTime time) {
         Pattern todayPattern = Pattern.compile("(сегодня)");
         Matcher m = todayPattern.matcher(input);
         if (m.find()) {
-            return LocalDate.now();
+            if (LocalTime.now().isBefore(time)) {
+                return LocalDate.now();
+            } else {
+                return LocalDate.now().plusDays(1);
+            }
         }
 
         Pattern tomorrowPattern = Pattern.compile("(завтра)");
@@ -62,25 +60,33 @@ public class Translator {
         weekdays.put("(в субботу)", DayOfWeek.SATURDAY);
         weekdays.put("(в воскресенье)", DayOfWeek.SUNDAY);
 
-        for (Map.Entry<String, DayOfWeek> weekday : weekdays.entrySet()){
+        for (Map.Entry<String, DayOfWeek> weekday : weekdays.entrySet()) {
             Pattern pattern = Pattern.compile(weekday.getKey());
             m = pattern.matcher(input);
             if (m.find()) {
-                return LocalDate.now().with(TemporalAdjusters.next(weekday.getValue()));
+                if (LocalTime.now().isBefore(time)) {
+                    return LocalDate.now().with(TemporalAdjusters.next(weekday.getValue()));
+                } else {
+                    //if now is 13.00 of monday and user wants to create task on 10.00 of monday - return not today, but next monday
+                    return LocalDate.now().plusDays(1).with(TemporalAdjusters.next(weekday.getValue()));
+                }
             }
         }
 
         //else
-        return LocalDate.now();
+        if (LocalTime.now().isBefore(time)) {
+            return LocalDate.now();
+        } else {
+            return LocalDate.now().plusDays(1);
+        }
     }
 
     static private LocalTime getTimeFromString(String input) {
-        Pattern timePattern = Pattern.compile("(([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])");
+        Pattern timePattern = Pattern.compile("(([0-9]|0[0-9]|1[0-9]|2[0-3])[:.][0-5][0-9])");
         Matcher matcher = timePattern.matcher(input);
         LocalTime time = null;
         if (matcher.find()) {
-            String timeString = matcher.group(1);
-            input.replace(timeString, "");
+            String timeString = matcher.group(1).replace(".", ":");
             time = LocalTime.parse(timeString);
         }
         return time;
