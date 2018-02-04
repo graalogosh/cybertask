@@ -17,24 +17,30 @@ import java.util.regex.Pattern;
  */
 public class Translator {
     static Task getTaskFromString(String input) {
+        StringBuilder inputString = new StringBuilder(input);
+
         //delete junk
+        deleteSubStr(inputString, "Напомни мне");
+        deleteSubStr(inputString, "напомни мне");
+        deleteSubStr(inputString, "Пожалуйста");
+        deleteSubStr(inputString, "пожалуйста");
 
         //time
-        final LocalTime time = getTimeFromString(input);
+        final LocalTime time = getTimeFromString(inputString);
 
         //date
-        final LocalDate date = getDateFromString(input, time);
+        final LocalDate date = getDateFromString(inputString, time);
 
         //combine date and time
         final LocalDateTime resultDateTime = LocalDateTime.of(date, time);
 
         //subject
+        String subject = upperCaseFirst(inputString.toString().trim());
 
-
-        return Task.builder().date(resultDateTime).build();
+        return Task.builder().title(subject).date(resultDateTime).build();
     }
 
-    static private LocalDate getDateFromString(String input, final LocalTime time) {
+    static private LocalDate getDateFromString(StringBuilder input, final LocalTime time) {
         Pattern todayPattern = Pattern.compile("(сегодня)");
         Matcher m = todayPattern.matcher(input);
         if (m.find()) {
@@ -64,6 +70,7 @@ public class Translator {
             Pattern pattern = Pattern.compile(weekday.getKey());
             m = pattern.matcher(input);
             if (m.find()) {
+                deleteSubStr(input, weekday.getKey().replace('(',' ').replace(')',' ').trim());
                 if (LocalTime.now().isBefore(time)) {
                     return LocalDate.now().with(TemporalAdjusters.next(weekday.getValue()));
                 } else {
@@ -81,14 +88,29 @@ public class Translator {
         }
     }
 
-    static private LocalTime getTimeFromString(String input) {
+    static private LocalTime getTimeFromString(StringBuilder input) {
         Pattern timePattern = Pattern.compile("(([0-9]|0[0-9]|1[0-9]|2[0-3])[:.][0-5][0-9])");
         Matcher matcher = timePattern.matcher(input);
         LocalTime time = null;
         if (matcher.find()) {
-            String timeString = matcher.group(1).replace(".", ":");
+            String timeString = matcher.group(1);
+            deleteSubStr(input, " в " + timeString);
+            timeString = timeString.replace(".", ":");
             time = LocalTime.parse(timeString);
         }
         return time;
+    }
+
+    static private void deleteSubStr(StringBuilder string, String subStr) {
+        int i = string.indexOf(subStr);
+        if (i != -1) {
+            string.delete(i, i + subStr.length());
+        }
+    }
+
+    static private String upperCaseFirst(String value) {
+        char[] array = value.toCharArray();
+        array[0] = Character.toUpperCase(array[0]);
+        return new String(array);
     }
 }

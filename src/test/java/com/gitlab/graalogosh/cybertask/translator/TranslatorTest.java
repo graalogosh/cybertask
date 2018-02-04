@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 
@@ -44,6 +45,17 @@ public class TranslatorTest {
         LocalDate expected = LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.TUESDAY));
         Task task = Translator.getTaskFromString(input);
         LocalDate actual = task.getDate().toLocalDate();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getTaskFromString_full() {
+        String input = "Напомни мне пожалуйста покормить кота во вторник в 13.45";
+        Task expected = Task.builder()
+                .title("Покормить кота")
+                .date(LocalDateTime.of(LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.TUESDAY)), LocalTime.of(13, 45)))
+                .build();
+        Task actual = Translator.getTaskFromString(input);
         assertEquals(expected, actual);
     }
 }
