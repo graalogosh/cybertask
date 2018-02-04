@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -21,9 +21,9 @@ public class Task {
 
     private String where;
 
-    private Date date;
-    private Date completedDate;
-    private List<Date> notificationDates;
+    private LocalDateTime date;
+    private LocalDateTime completedDate;
+    private List<LocalDateTime> notificationDates;
     private Boolean recurring;
 
     private List<Task> subtasks;
